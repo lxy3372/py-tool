@@ -3,7 +3,7 @@
 
 from json import *
 
-__author__ = 'Ricky'
+__author__ = 'Riky'
 
 
 def analysis_log(file_path):
