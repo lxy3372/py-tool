@@ -1,78 +1,59 @@
-#-*- coding:gbk-*-  
-#coding=gbk
-  
-# ¼ìË÷Ä¿Â¼ÏÂËùÓÐÎÄ¼þÖÐ°üº¬Ö¸¶¨×Ö·û´®µÄÎÄ¼þ  
-import os  
-import re  
-  
-# Ã¶¾ÙdirPathÄ¿Â¼ÏÂµÄËùÓÐÎÄ¼þ  
-def listFiles(dirPath):  
-#begin  
-    fileList = []  
-    for root, dirs, files in os.walk(dirPath):          # ×¢Òâos.walkµÄ¹¦ÄÜ  
-    #begin  
-        for fileObj in files:  
-        #begin  
-            fileList.append(os.path.join(root, fileObj))  
-        #end  
-    #end  
-    return fileList  
-#end  
-  
-def findString(filePath, regex,j):  
-#begin  
-	isFind = False
-	fileObj = open(filePath, 'r')
-	for i,eachLine in enumerate(fileObj):  
-    #begin  
-		if re.search(regex, eachLine, re.I):  
-        #begin
-			print str(j)+"ÎÄ¼þ£º"+str(filePath)+"	µÚ"+str(i)+"ÐÐ:"
-			print str(eachLine)+"\n\n"
-			isFind = True
-			break
-        #end
-    #end
-	return isFind
-#end
-  
-  
-def main():  
-#begin  
-	fileDir = False
-	regex = False
-	while fileDir=='' or fileDir == False:
-		fileDir = raw_input("ÇëÊäÈëÎÄ¼þÄ¿Â¼£º");
-		if fileDir == 'exit':
-			print "Bye"
-			exit()
-		elif os.path.exists(fileDir) is False:
-			print "ÎÄ¼þÄ¿Â¼²»´æÔÚ"
-			fileDir = False
-		else:
-			os.system('cls')
-	while regex == '' or regex == False:
-		regex = raw_input("ÇëÊäÈëÒª²éÕÒµÄ×Ö·û£º");
-	else:
-		os.system('cls')
+#!/usr/bin/env python
+# -*- coding=utf-8 -*-
+"""only windows"""
+import os
+import re
 
-	print 'loading...'
-	fileList = listFiles(fileDir)
-	print "load "+str(len(fileList))+" files\n"
-	print 'searching...'
-	findCount = 0
-	for j,fileObj in enumerate(fileList):
-    #begin
-		if(findString(fileObj,regex,j) is True):
-			findCount += 1
-    #end
-	print "¹²ÕÒµ½"+str(findCount)+"¸öÎÄ¼þÖÐº¬ÓÐ"+str(regex)
-	os.system("pause")
-#end  
-  
+
+def listFiles(dirPath):
+    fileList = []
+    for root, dirs, files in os.walk(dirPath):
+        for fileObj in files:
+            fileList.append(os.path.join(root, fileObj))
+    return fileList
+
+
+def findString(filePath, regex, j):
+    isFind = False
+    fileObj = open(filePath, 'r')
+    for i, eachLine in enumerate(fileObj):
+        if re.search(regex, eachLine, re.I):
+            print str(j) + "ï¿½Ä¼ï¿½ï¿½ï¿½" + str(filePath) + "	ï¿½ï¿½" + str(i) + "ï¿½ï¿½:"
+            print str(eachLine) + "\n\n"
+            isFind = True
+            break
+    return isFind
+
+
+def main():
+    fileDir = False
+    regex = False
+    while fileDir == '' or fileDir == False:
+        fileDir = raw_input("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ä¿Â¼ï¿½ï¿½");
+        if fileDir == 'exit':
+            print "Bye"
+            exit()
+        elif os.path.exists(fileDir) is False:
+            print "ï¿½Ä¼ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+            fileDir = False
+        else:
+            os.system('cls')
+    while regex == '' or regex == False:
+        regex = raw_input("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Òµï¿½ï¿½Ö·ï¿½ï¿½ï¿½");
+    else:
+        os.system('cls')
+
+    print 'loading...'
+    fileList = listFiles(fileDir)
+    print "load " + str(len(fileList)) + " files\n"
+    print 'searching...'
+    findCount = 0
+    for j, fileObj in enumerate(fileList):
+        if (findString(fileObj, regex, j) is True):
+            findCount += 1
+    print "ï¿½ï¿½ï¿½Òµï¿½" + str(findCount) + "ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ðºï¿½ï¿½ï¿½" + str(regex)
+    os.system("pause")
+
 
 if __name__ == '__main__':
-#begin  
     main()
-#end  
-
