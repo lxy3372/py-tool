@@ -1,17 +1,26 @@
 #!/usr/bin/env python
 # -*- coding=utf-8 -*-f
 
+"""
+Valid logs format:
+# Time: 150721 20:55:38
+# User@Host: root[root] @  [10.169.93.18]
+# Query_time: 10.101854  Lock_time: 0.000171 Rows_sent: 1  Rows_examined: 12988290
+SET timestamp=1437483338;
+SELECT * FROM test.t_test_user;
+"""
+
 from email.mime.text import MIMEText
 import smtplib
 import time
-from datetime import datetime
+import os
 
 __author__ = 'Riky'
 
 
 def get_count(counter_file):
     """
-    get counter
+    get lines counter
     """
     try:
         with open(counter_file) as file:
@@ -24,14 +33,20 @@ def get_count(counter_file):
 
 def set_count(counter_file, count):
     """
-    set counter
+    set lines counter
     """
     with open(counter_file, 'w') as file:
         file.write(count)
 
 
 def parser_log(log_file, start_line):
-    new_count = 0
+    """parse mysql-slow.log
+    :param str log_file:日志文件地址
+    :param str start_line:计数器文件地址
+    :returns int lines_total, sql_list
+    """
+    p = os.popen("wc -l " + log_file + " | awk '{print $1}' ")  # only unix
+    lines_total = p.read()
     with open(log_file) as log:
         i = 0
         sql_list = []
@@ -62,28 +77,31 @@ def parser_log(log_file, start_line):
                     if len(sql_list) >= 100:
                         break
                     continue
-    return new_count, sql_list
+    return lines_total, sql_list
 
 
 def send_mail(sqls):
-    sender = ''
-    receiver = ''
+    sender = 'account@my.org'
+    receiver = 'riky@my.org'
     subject = 'Mysql 慢查询日志'
-    smtpserver = ''
-    username = ''
-    password = ''
+    smtpserver = 'smtp.my.com'
+    username = 'account@my.org'
+    password = '****'
     content = "<br><br>" + subject + time.strftime("%Y-%m-%d") + "<br><br>" \
               "<div style='width:100%;'><table cellpadding='0' cellspacing='0' width='100%' style='border:1px solid #000;'><tr>" \
               "<th style='border:1px solid #ccc;text-align:center;'>SQL</th>" \
               "<th style='border:1px solid #ccc;text-align:center;'>耗时</th>"\
               "<th style='border:1px solid #ccc;text-align:center;'>查询时刻</th></tr>"
-    for data in sqls:
-        content += "<tr>"
-        content += "<td style='border:1px solid #ccc;text-align:center;'>" + data['sql'] + "</td>"
-        content += "<td style='border:1px solid #ccc;text-align:center;'>" + data['query_time'] + "</td>"
-        content += "<td style='border:1px solid #ccc;text-align:center;'>" + time.strftime("%Y-%m-%d %H:%I:%S", time.gmtime(data['date'])) + "</td>"
-        content += "</tr>"
-    content += "<tr><td colspan='2' style='text-align:center'>登陆服务器查看更多</td></tr>"
+    if len(sqls) > 0:
+        for data in sqls:
+            content += "<tr>"
+            content += "<td style='border:1px solid #ccc;text-align:center;'>" + data['sql'] + "</td>"
+            content += "<td style='border:1px solid #ccc;text-align:center;'>" + data['query_time'] + "</td>"
+            content += "<td style='border:1px solid #ccc;text-align:center;'>" + time.strftime("%Y-%m-%d %H:%I:%S", time.gmtime(data['date'])) + "</td>"
+            content += "</tr>"
+        content += "<tr><td colspan='3' style='text-align:center'>登陆服务器查看更多</td></tr>"
+    else:
+        content += "<tr><td colspan='3' style='text-align:center'>没有数据</td></tr>"
     content += "</table></div>"
 
     msg = MIMEText(content, 'html', 'utf-8')  # 中文需参数‘utf-8'，单字节字符不需要
@@ -96,26 +114,23 @@ def send_mail(sqls):
         smtp.login(username, password)
         smtp.sendmail(sender, receiver, msg.as_string())
     except smtplib.SMTPAuthenticationError as e:
-        print unicode(e.smtp_error, 'cp936')
+        print unicode(e.smtp_error, 'cp936')  # gbk to utf-8
     else:
         smtp.quit()
 
 
 def run(log_file, counter_file):
     """
-    :param log_file:日志文件地址
-    :param counter_file:计数器文件地址
+    :param str log_file:日志文件地址
+    :param str counter_file:计数器文件地址
     """
     count = get_count(counter_file)
-    ret = parser_log(log_file, count)
-    lines_total = ret[0]
-    sql_list = ret[1]
+    lines_total, sql_list = parser_log(log_file, count)
     set_count(counter_file, str(lines_total))
     send_mail(sql_list)
 
 
 if __name__ == "__main__":
-    file = "/Users/CHDXY/Workspace/Python/py-tool/mysql-slow.log"
-    counter_file = "/Users/CHDXY/Workspace/Python/py-tool/counter.txt"
-    date = datetime.time
+    file = "./py-tool/mysql-slow.log"
+    counter_file = "./counter.txt"
     run(file, counter_file)
