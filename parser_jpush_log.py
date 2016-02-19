@@ -26,7 +26,7 @@ def analysis_log(file_path):
                     print(result)
                 i = i + 1
             print("total %d lines" % i)
-    except FileNotFoundError as e:
+    except Exception as e:
         print("can not found the files")
     finally:
         print('done.')
