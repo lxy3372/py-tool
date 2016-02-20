@@ -82,7 +82,7 @@ def parser_log(log_file, start_line):
 
 def send_mail(sqls):
     sender = 'account@my.org'
-    receiver = 'riky@my.org'
+    receiver = ['riky@my.org']
     subject = 'Mysql 慢查询日志'
     smtpserver = 'smtp.my.com'
     username = 'account@my.org'
@@ -107,6 +107,7 @@ def send_mail(sqls):
     msg = MIMEText(content, 'html', 'utf-8')  # 中文需参数‘utf-8'，单字节字符不需要
     msg['Subject'] = subject
     msg['From'] = sender
+    msg['To'] = ";".join(receiver)
 
     smtp = smtplib.SMTP()
     smtp.connect(smtpserver)
@@ -131,6 +132,6 @@ def run(log_file, counter_file):
 
 
 if __name__ == "__main__":
-    file = "./py-tool/mysql-slow.log"
+    file = "./mysql-slow.log"
     counter_file = "./counter.txt"
     run(file, counter_file)
