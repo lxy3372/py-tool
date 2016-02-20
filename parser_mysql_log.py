@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding=utf-8 -*-f
+# -*- coding=utf-8 -*-
 
 """
 Valid logs format:
