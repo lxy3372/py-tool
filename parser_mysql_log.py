@@ -40,10 +40,11 @@ def set_count(counter_file, count):
         file.write(count)
 
 
-def parser_log(log_file, start_line):
+def parser_log(log_file, start_line, filters=None):
     """parse mysql-slow.log
     :param str log_file:日志文件地址
     :param str start_line:计数器文件地址
+    :param filters:过滤文字
     :returns lines_total, sql_list
     """
     p = os.popen("wc -l " + log_file + " | awk '{print $1}' ")  # only unix
@@ -71,6 +72,12 @@ def parser_log(log_file, start_line):
                 continue
 
             if i is 2:
+                if filters is not None:
+                    for filter in filters:
+                        if line.find(str(filter)) > 0:
+                            data = {}
+                            i = 0
+                            break
                 data['sql'] += line.strip()
                 if line.rfind(';') > 0:
                     i = 0
@@ -78,6 +85,8 @@ def parser_log(log_file, start_line):
                     if len(sql_list) >= 100:
                         break
                     continue
+    print sql_list
+    exit()
     return lines_total, sql_list
 
 
@@ -125,13 +134,14 @@ def send_mail(sqls):
         smtp.quit()
 
 
-def run(log_file, counter_file):
+def run(log_file, counter_file, filters=None):
     """
     :param str log_file:日志文件地址
     :param str counter_file:计数器文件地址
+    :param filters
     """
     count = get_count(counter_file)
-    lines_total, sql_list = parser_log(log_file, count)
+    lines_total, sql_list = parser_log(log_file, count, filters)
     set_count(counter_file, str(lines_total))
     send_mail(sql_list)
 
@@ -139,4 +149,5 @@ def run(log_file, counter_file):
 if __name__ == "__main__":
     file = "./mysql-slow.log"
     counter_file = "./counter.txt"
-    run(file, counter_file)
+    filters = ['t_chat_rooms_users_log']
+    run(file, counter_file, filters)
