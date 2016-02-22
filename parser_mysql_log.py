@@ -78,6 +78,8 @@ def parser_log(log_file, start_line, filters=None):
                             data = {}
                             i = 0
                             break
+                if i is 0:
+                    continue
                 data['sql'] += line.strip()
                 if line.rfind(';') > 0:
                     i = 0
@@ -85,8 +87,6 @@ def parser_log(log_file, start_line, filters=None):
                     if len(sql_list) >= 100:
                         break
                     continue
-    print sql_list
-    exit()
     return lines_total, sql_list
 
 
