@@ -44,7 +44,7 @@ def parser_log(log_file, start_line):
     """parse mysql-slow.log
     :param str log_file:日志文件地址
     :param str start_line:计数器文件地址
-    :returns int lines_total, sql_list
+    :returns lines_total, sql_list
     """
     p = os.popen("wc -l " + log_file + " | awk '{print $1}' ")  # only unix
     lines_total = p.read()
