@@ -7,9 +7,10 @@ py-tool
 ####4. parser_jpush_log.py  解析Jpush返回日志
 ####5. parser_mysql_log.py  解析Mysql慢查询日志，并发送邮件
 ####6. parser_mysql_total.py  统计当前数据库数据表记录总量,并发送邮件
-    ```bash
+
+```bash
     sudo pip install pymysql
     #the update the information about sender and reciver
     #last
     python parser_mysql_total.py
-    ```
+```
