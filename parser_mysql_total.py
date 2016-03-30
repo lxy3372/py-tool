@@ -58,7 +58,6 @@ def send_mail(list):
     else:
         content += "<tr><td colspan='2' style='text-align:center'>没有数据</td></tr>"
     content += "</table></div>"
-    pass
 
     msg = MIMEText(content, 'html', 'utf-8')  # 中文需参数‘utf-8'，单字节字符不需要
     msg['Subject'] = subject
